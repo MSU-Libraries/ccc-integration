@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.web>
+    <compilation debug="true" targetFramework="4.8">
+      <assemblies />
+    </compilation>
+    <httpRuntime targetFramework="4.8" />
+  </system.web>
+  <appSettings>
+     <add key="MonoServerDefaultIndexFiles" value="SearchCCCIntegration.aspx" />
+    <!-- CCC API -->
+    <add key="ccc_token_endpoint" value="[API_BASE_URL]/auth/" />
+    <add key="ccc_accademic_endpoint" value="[API_BASE_URL]/academic_v1.0/" />
+    <add key="ccc_username" value="[USERNAME]" />
+    <add key="ccc_password" value="[PASSWORD]" />
+    <add key="ccc_client_id" value="[CLIENT_ID]" />
+    <add key="ccc_client_secret" value="[CLIENT_SECRET]" />
+    <add key="university_inst" value="[UNIVERSITY_INSTITUTION]" />
+  </appSettings>
+</configuration>
