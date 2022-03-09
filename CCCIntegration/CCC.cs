@@ -15,6 +15,7 @@ namespace CCCIntegration
     {
         string access_token;
         string refresh_token;
+        DateTime expire_time;
 
         public static readonly IList<string> AllProducts = new System.Collections.ObjectModel.ReadOnlyCollection<string>
             (new List<String> {
@@ -83,7 +84,7 @@ namespace CCCIntegration
 
         private IRestResponse CallApi(RestClient client, RestRequest request)
         {
-            RefreshToken();
+            Authenticate();
             request = AddCommonAttributes(client, request);
             IRestResponse response = client.Execute(request);
             if (response.StatusCode == HttpStatusCode.Forbidden || response.StatusCode == HttpStatusCode.Unauthorized)
@@ -119,12 +120,9 @@ namespace CCCIntegration
             {
                 GetToken();
             }
-            else
+            else if (expire_time < DateTime.Now)
             {
-                // try to call the API with the existing token to see if it expired
-                var client = new RestClient(BuildAccademicUrl("users/locations"));
-                var request = new RestRequest(Method.GET);
-                CallApi(client, request);
+                RefreshToken();
             }
         }
 
@@ -140,11 +138,12 @@ namespace CCCIntegration
             IRestResponse response = client.Execute(request);
             JObject resp = ResponseToJson(response);
 
-            // Prase the response
+            // Parse the response
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 access_token = (string)resp["access_token"];
                 refresh_token = (string)resp["refresh_token"];
+                expire_time = DateTime.Now.AddSeconds((int)resp["expires_in"] - 5); // Remove a buffer amount
             }
             else
             {
@@ -174,10 +173,11 @@ namespace CCCIntegration
                 IRestResponse response = client.Execute(request);
                 JObject resp = ResponseToJson(response);
 
-                // Prase the response
+                // Parse the response
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     access_token = (string)resp["access_token"];
+                    expire_time = DateTime.Now.AddSeconds((int)resp["expires_in"] - 5); // Remove a buffer amount
                 }
                 else
                 {
